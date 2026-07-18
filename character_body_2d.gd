@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export var ski_snelheid: float = 2000.0
+@export var ski_snelheid: float = 200.0
 @export var ski_snelheid_fast: float = 300.0
 @export var trage_multiplier: float = 0.4
 

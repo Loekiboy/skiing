@@ -5,6 +5,37 @@
 [ext_resource type="PackedScene" uid="uid://chjkidocpggwg" path="res://track_segment.tscn" id="2_036b0"]
 [ext_resource type="Script" uid="uid://dop47vlp5amxj" path="res://character_body_2d.gd" id="2_tlwt5"]
 [ext_resource type="Texture2D" uid="uid://bfwj815ivj83q" path="res://assets/player.png" id="3_aqk2v"]
+[ext_resource type="Script" uid="uid://d00y7j4i00t73" path="res://area_2d.gd" id="6_dwbse"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l74px"]
+size = Vector2(12, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_036b0"]
+atlas = ExtResource("1_f3sb7")
+region = Rect2(160, 80, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dwbse"]
+atlas = ExtResource("1_f3sb7")
+region = Rect2(176, 80, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l74px"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_036b0")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dwbse")
+}],
+"loop": 1,
+"name": &"fast",
+"speed": 5.0
+}]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fj7yv"]
 texture = ExtResource("1_f3sb7")
@@ -299,42 +330,34 @@ terrain_set_0/terrain_0/name = "path"
 terrain_set_0/terrain_0/color = Color(0.5, 0.34375, 0.25, 1)
 sources/0 = SubResource("TileSetAtlasSource_fj7yv")
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_l74px"]
-size = Vector2(12, 14)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s4xl1"]
+size = Vector2(601, 19)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_036b0"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_pkg7o"]
 atlas = ExtResource("1_f3sb7")
-region = Rect2(160, 80, 16, 16)
+region = Rect2(96, 96, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_dwbse"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_gbfbk"]
 atlas = ExtResource("1_f3sb7")
-region = Rect2(176, 80, 16, 16)
+region = Rect2(112, 96, 16, 16)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_l74px"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_s4xl1"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_036b0")
+"texture": SubResource("AtlasTexture_pkg7o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gbfbk")
 }],
 "loop": 1,
 "name": &"default",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_dwbse")
-}],
-"loop": 1,
-"name": &"fast",
 "speed": 5.0
 }]
 
 [node name="world" type="Node2D" unique_id=1501136617]
 script = ExtResource("1_aqk2v")
 segment_scene = ExtResource("2_036b0")
-
-[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=800822475]
-tile_set = SubResource("TileSet_l74px")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="." unique_id=1902393399]
 script = ExtResource("2_tlwt5")
@@ -345,7 +368,7 @@ texture = ExtResource("3_aqk2v")
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D" unique_id=223383040]
 zoom = Vector2(3, 3)
-limit_left = -150
+limit_left = -181
 limit_right = 200
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0
@@ -357,3 +380,19 @@ shape = SubResource("RectangleShape2D_l74px")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D" unique_id=613139174]
 sprite_frames = SubResource("SpriteFrames_l74px")
 animation = &"fast"
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=800822475]
+tile_set = SubResource("TileSet_l74px")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=537668935 node_paths=PackedStringArray("camera")]
+script = ExtResource("6_dwbse")
+camera = NodePath("../CharacterBody2D/Camera2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1769918242]
+position = Vector2(22.5, -99.5)
+shape = SubResource("RectangleShape2D_s4xl1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Area2D" unique_id=110688584]
+position = Vector2(-1, -99)
+sprite_frames = SubResource("SpriteFrames_s4xl1")
+autoplay = "default"
