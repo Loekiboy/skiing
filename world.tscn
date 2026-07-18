@@ -1,54 +1,10 @@
 [gd_scene format=3 uid="uid://jgss4kxk0evc"]
 
-[ext_resource type="PackedScene" uid="uid://chjkidocpggwg" path="res://track_segment.tscn" id="1_aqk2v"]
+[ext_resource type="Script" uid="uid://c7lj80gcig0m1" path="res://world.gd" id="1_aqk2v"]
 [ext_resource type="Texture2D" uid="uid://rxt6sbaqbwdi" path="res://assets/tilemap_packed.png" id="1_f3sb7"]
+[ext_resource type="PackedScene" uid="uid://chjkidocpggwg" path="res://track_segment.tscn" id="2_036b0"]
 [ext_resource type="Script" uid="uid://dop47vlp5amxj" path="res://character_body_2d.gd" id="2_tlwt5"]
 [ext_resource type="Texture2D" uid="uid://bfwj815ivj83q" path="res://assets/player.png" id="3_aqk2v"]
-
-[sub_resource type="GDScript" id="GDScript_tlwt5"]
-script/source = "extends Node2D
-
-# Sleep je gemaakte segment-scène in de inspector naar deze variabele
-@export var segment_scene: PackedScene 
-
-var segment_hoogte: float = 320.0 # 20 tiles * 16 pixels per tile
-var spawn_y: float = 0.0
-var actieve_segmenten: Array = []
-var max_segmenten_op_scherm: int = 5
-
-func _ready():
-	# Spawn de eerste paar rechte segmenten om mee te beginnen
-	for i in range(max_segmenten_op_scherm):
-		spawn_segment()
-
-func spawn_segment() -> void:
-	var nieuw_segment = segment_scene.instantiate()
-	
-	# Zet het segment op de juiste hoogte (we gaan naar beneden)
-	nieuw_segment.position = Vector2(0, spawn_y)
-	add_child(nieuw_segment)
-	
-	# Verbind het Area2D-signaal van het segment om te weten wanneer de speler er is
-	var trigger = nieuw_segment.get_node(\"Area2D\") # Zorg dat de naam klopt
-	trigger.body_entered.connect(_on_speler_passeert_trigger.bind(nieuw_segment))
-	
-	actieve_segmenten.append(nieuw_segment)
-	spawn_y += segment_hoogte
-
-func _on_speler_passeert_trigger(_body, segment) -> void:
-	# Check of het de speler is (bijv. zit in de groep \"Speler\")
-	if _body.is_in_group(\"Speler\"):
-		# Ontkoppel de trigger zodat hij niet twee keer afgaat
-		segment.get_node(\"Area2D\").queue_free()
-		
-		# Spawn een nieuwe aan de onderkant
-		spawn_segment()
-		
-		# Verwijder het oudste segment bovenaan om geheugen te besparen
-		if actieve_segmenten.size() > max_segmenten_op_scherm + 2:
-			var oud_segment = actieve_segmenten.pop_front()
-			oud_segment.queue_free()
-"
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fj7yv"]
 texture = ExtResource("1_f3sb7")
@@ -346,9 +302,36 @@ sources/0 = SubResource("TileSetAtlasSource_fj7yv")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l74px"]
 size = Vector2(12, 14)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_036b0"]
+atlas = ExtResource("1_f3sb7")
+region = Rect2(160, 80, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dwbse"]
+atlas = ExtResource("1_f3sb7")
+region = Rect2(176, 80, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l74px"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_036b0")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dwbse")
+}],
+"loop": 1,
+"name": &"fast",
+"speed": 5.0
+}]
+
 [node name="world" type="Node2D" unique_id=1501136617]
-script = SubResource("GDScript_tlwt5")
-segment_scene = ExtResource("1_aqk2v")
+script = ExtResource("1_aqk2v")
+segment_scene = ExtResource("2_036b0")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=800822475]
 tile_set = SubResource("TileSet_l74px")
@@ -357,6 +340,7 @@ tile_set = SubResource("TileSet_l74px")
 script = ExtResource("2_tlwt5")
 
 [node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D" unique_id=480000988]
+visible = false
 texture = ExtResource("3_aqk2v")
 
 [node name="Camera2D" type="Camera2D" parent="CharacterBody2D" unique_id=223383040]
@@ -364,7 +348,12 @@ zoom = Vector2(3, 3)
 limit_left = -150
 limit_right = 200
 position_smoothing_enabled = true
+position_smoothing_speed = 10.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D" unique_id=1148812683]
 position = Vector2(0, 1)
 shape = SubResource("RectangleShape2D_l74px")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="CharacterBody2D" unique_id=613139174]
+sprite_frames = SubResource("SpriteFrames_l74px")
+animation = &"fast"
